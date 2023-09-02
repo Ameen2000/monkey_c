@@ -4,14 +4,23 @@
 typedef enum {
 	Illegal,
 	TokenEOF,
+	// Identifiers
+	Ident,
 	Int,
+	// Operators
 	Assign,
 	Plus,
 	Minus,
 	Asterisk,
 	Slash,
+	// Delimeters
+	Comma,
+	SemiColon,
 	LParen,
 	RParen,
+	LBrace,
+	RBrace,
+	// Other stuff
 	Circumflex, // ^
 } TokenType;
 

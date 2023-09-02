@@ -35,7 +35,7 @@ void read_char(Lexer* l) {
 		l->ch = l->input[l->readPosition];
 	}
 	l->position = l->readPosition;
-	l->readPosition += 1;
+	++l->readPosition;
 }
 
 char* read_number(Lexer* l) {
@@ -57,6 +57,25 @@ char* read_number(Lexer* l) {
 	return ret;
 }
 
+char* read_identifier(Lexer* l) {
+	size_t pos;
+	uint8_t is;
+	char* ret;
+	pos = l->position;
+	while ((is = (isalpha(l->ch) || (l->ch == '_')))) {
+		read_char(l);
+		is = (isalpha(l->ch) || (l->ch == '_'));
+	}
+	ret = calloc((l->position - pos) + 1, sizeof *ret);
+	if (ret == NULL) {
+		return NULL;
+	}
+	memcpy(ret, l->input + pos, l->position - pos);
+	l->position--;
+	l->readPosition--;
+	return ret;
+}
+
 Token next_token(Lexer* l){
 	Token tok;
 	switch (l->ch) {
@@ -66,12 +85,30 @@ Token next_token(Lexer* l){
 		case '+':
 			tok.type = Plus;
 			tok.literal = "+";
+		case '-':
+			tok.type = Minus;
+			tok.literal = "-";
 		case '*':
 			tok.type = Asterisk;
 			tok.literal = "*";
 		case '/':
 			tok.type = Slash;
 			tok.literal = "/";
+		case '^':
+			tok.type = Circumflex;
+			tok.literal = "^";
+		case ',':
+			tok.type = Comma;
+			tok.literal = ",";
+		case ';':
+			tok.type = SemiColon;
+			tok.literal = ";";
+		case '{':
+			tok.type = LBrace;
+			tok.literal = "{";
+		case '}':
+			tok.type = RBrace;
+			tok.literal = "}";
 		case '(':
 			tok.type = LParen;
 			tok.literal = "(";
@@ -85,17 +122,21 @@ Token next_token(Lexer* l){
 			if (isdigit(l->ch)) {
 				tok.type = Int;
 				tok.literal = read_number(l);
+			} else if (isalpha(l->ch)) {
+				tok.type = Ident;
+				tok.literal = read_number(l);
 			} else {
 				tok.type = Illegal;
+				tok.literal = "";
 		}
+
 	}
 	read_char(l);
 	return tok;
 }
 
 TokenList* lex(char* string) {
-	Lexer* lexer = (Lexer*) malloc(sizeof(Lexer));
-	lexer = init(string);
+	Lexer* lexer = init(string);
 	TokenList* head = (TokenList*) malloc(sizeof(TokenList));
 	while (lexer->ch != '\0') {
 		Token tok = next_token(lexer);
