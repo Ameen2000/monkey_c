@@ -13,6 +13,9 @@ typedef enum {
 	Minus,
 	Asterisk,
 	Slash,
+	EQ,
+	Bang,
+	NOT_EQ,
 	// Delimeters
 	Comma,
 	SemiColon,
@@ -20,6 +23,9 @@ typedef enum {
 	RParen,
 	LBrace,
 	RBrace,
+	// Keywords
+	Function,
+	Let,
 	// Other stuff
 	Circumflex, // ^
 } TokenType;
@@ -34,10 +40,12 @@ typedef struct Node {
 	struct Node* next;
 } TokenList;
 
-void push_token(TokenList** head, Token data);
+void push_token(TokenList* head, Token data);
 
 char* token_type(TokenType t);
 
 void print_token_list(TokenList* t);
+
+TokenType lookup_ident(char* ident);
 
 #endif

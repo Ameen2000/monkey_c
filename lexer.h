@@ -7,7 +7,7 @@ typedef struct Lexer {
 	char* input;
 	int input_len;
 	int position;
-	int readPosition;
+	int read_position;
 	char ch;
 } Lexer;
 

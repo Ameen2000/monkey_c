@@ -8,7 +8,7 @@
 #include "lexer.h"
 #include "token.h"
 
-void read_char(Lexer *l);
+void lexer_read_char(Lexer *l);
 
 Lexer* init(char* input) {
 	Lexer* l;
@@ -20,22 +20,22 @@ Lexer* init(char* input) {
 	l->input = input;
 	l->input_len = strlen(input);
 	l->position = 0;
-	l->readPosition = 1;
+	l->read_position = 1;
 	l->ch = *input;
 	return l;
 }
 
-void read_char(Lexer* l) {
+void lexer_read_char(Lexer* l) {
 	int len, readPosition;
-	readPosition = l->readPosition;
+	readPosition = l->read_position;
 	len = l->input_len;
 	if (readPosition >= len) {
 		l->ch = 0;
 	} else {
-		l->ch = l->input[l->readPosition];
+		l->ch = l->input[l->read_position];
 	}
-	l->position = l->readPosition;
-	++l->readPosition;
+	l->position = l->read_position;
+	++l->read_position;
 }
 
 char* read_number(Lexer* l) {
@@ -44,7 +44,7 @@ char* read_number(Lexer* l) {
 	char* ret;
 	pos = l->position;
 	while ((is = isdigit(l->ch))) {
-		read_char(l);
+		lexer_read_char(l);
 		is = isdigit(l->ch);
 	}
 	ret = calloc((l->position - pos) + 1, sizeof *ret);
@@ -53,8 +53,12 @@ char* read_number(Lexer* l) {
 	}
 	memcpy(ret, l->input + pos, l->position - pos);
 	l->position--;
-	l->readPosition--;
+	l->read_position--;
 	return ret;
+}
+
+uint8_t is_letter(char ch) {
+	return ((('a' <= ch) && (ch <= 'z')) || (('A' <= ch) && (ch <= 'Z')) || (ch == '_')) ? 1 : 0;
 }
 
 char* read_identifier(Lexer* l) {
@@ -62,8 +66,8 @@ char* read_identifier(Lexer* l) {
 	uint8_t is;
 	char* ret;
 	pos = l->position;
-	while ((is = (isalpha(l->ch) || (l->ch == '_')))) {
-		read_char(l);
+	while ((is = is_letter(l->ch))) {
+		lexer_read_char(l);
 		is = (isalpha(l->ch) || (l->ch == '_'));
 	}
 	ret = calloc((l->position - pos) + 1, sizeof *ret);
@@ -72,12 +76,38 @@ char* read_identifier(Lexer* l) {
 	}
 	memcpy(ret, l->input + pos, l->position - pos);
 	l->position--;
-	l->readPosition--;
+	l->read_position--;
 	return ret;
+}
+
+void skip_white_space(Lexer* l) {
+	while ((l->ch == ' ') || (l->ch == '\t') || (l->ch == '\n') || (l->ch == '\r')) {
+		lexer_read_char(l);
+	}
+}
+
+char peek_char(Lexer* l) {
+	if (l->read_position >= l->input_len) {
+		return 0;
+	}
+	return l->input[l->read_position];
 }
 
 Token next_token(Lexer* l){
 	Token tok;
+	skip_white_space(l);
+	if ((l->ch == '=') && (peek_char(l)== '=')) {
+		tok.type = EQ;
+		tok.literal = "==";
+		lexer_read_char(l);
+		return tok;
+	}
+	if ((l->ch == '!') && (peek_char(l)== '=')) {
+		tok.type = NOT_EQ;
+		tok.literal = "!=";
+		lexer_read_char(l);
+		return tok;
+	}
 	switch (l->ch) {
 		case '=':
 			tok.type = Assign;
@@ -94,6 +124,9 @@ Token next_token(Lexer* l){
 		case '/':
 			tok.type = Slash;
 			tok.literal = "/";
+		case '!':
+			tok.type = Bang;
+			tok.literal = "!";
 		case '^':
 			tok.type = Circumflex;
 			tok.literal = "^";
@@ -122,25 +155,24 @@ Token next_token(Lexer* l){
 			if (isdigit(l->ch)) {
 				tok.type = Int;
 				tok.literal = read_number(l);
-			} else if (isalpha(l->ch)) {
-				tok.type = Ident;
-				tok.literal = read_number(l);
+			} else if (is_letter(l->ch)) {
+				tok.literal = read_identifier(l);
+				tok.type = lookup_ident(tok.literal);
 			} else {
 				tok.type = Illegal;
 				tok.literal = "";
 		}
 
 	}
-	read_char(l);
+	lexer_read_char(l);
 	return tok;
 }
 
-TokenList* lex(char* string) {
-	Lexer* lexer = init(string);
-	TokenList* head = (TokenList*) malloc(sizeof(TokenList));
-	while (lexer->ch != '\0') {
-		Token tok = next_token(lexer);
-		TokenList** head_ptr = &head;
-	}
-	return head;
+TokenList* lex(char *input) {
+	Lexer* lexer_ptr = init(input);
+	Token tok = next_token(lexer_ptr);
+	TokenList* accum;
+	accum->data = tok;
+	accum->next = NULL;
+	// WORK IN PROGRESS
 }
