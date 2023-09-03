@@ -40,7 +40,9 @@ typedef struct Node {
 	struct Node* next;
 } TokenList;
 
-void push_token(TokenList* head, Token data);
+TokenList* push_token(TokenList* head, Token data);
+
+TokenList* add_token(TokenList* head, Token data);
 
 char* token_type(TokenType t);
 

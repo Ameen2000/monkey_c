@@ -4,10 +4,18 @@
 #include <sys/_types/_null.h>
 #include "token.h"
 
-void push_token(TokenList* list, Token data) {
-	TokenList new_head;
-	new_head.data = data;
-	new_head.next = list;
+TokenList* push_token(TokenList* list, Token data) {
+	TokenList* new_head;
+	new_head->data = data;
+	new_head->next = list;
+	return  new_head;
+}
+
+TokenList* add_token(TokenList* list, Token data) {
+	TokenList* new_tail;
+	new_tail->data = data;
+	list->next = new_tail;
+	return list;
 }
 
 char* token_type(TokenType t) {
