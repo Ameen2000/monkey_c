@@ -96,24 +96,21 @@ char peek_char(Lexer* l) {
 Token next_token(Lexer* l){
 	Token tok;
 	skip_white_space(l);
-	if ((l->ch == '=') && (peek_char(l)== '=')) {
-		tok.type = EQ;
-		tok.literal = "==";
-		lexer_read_char(l);
-		return tok;
-	}
-	if ((l->ch == '!') && (peek_char(l)== '=')) {
-		tok.type = NOT_EQ;
-		tok.literal = "!=";
-		lexer_read_char(l);
-		return tok;
-	}
 	switch (l->ch) {
 		case '=':
-			tok.type = Assign;
-			tok.literal = "=";
-			lexer_read_char(l);
-			return tok;
+			if (peek_char(l) == '=') {
+				tok.type = EQ;
+				tok.literal = "==";
+				lexer_read_char(l);
+				lexer_read_char(l);
+				return tok;
+			} else {
+				tok.type = Assign;
+				tok.literal = "=";
+				lexer_read_char(l);
+				return tok;
+
+			}
 		case '+':
 			tok.type = Plus;
 			tok.literal = "+";
@@ -135,10 +132,19 @@ Token next_token(Lexer* l){
 			lexer_read_char(l);
 			return tok;
 		case '!':
-			tok.type = Bang;
-			tok.literal = "!";
-			lexer_read_char(l);
-			return tok;
+			if (peek_char(l) == '=') {
+				tok.type = NOT_EQ;
+				tok.literal = "!=";
+				lexer_read_char(l);
+				lexer_read_char(l);
+				return tok;
+			}
+			else {
+				tok.type = Bang;
+				tok.literal = "!";
+				lexer_read_char(l);
+				return tok;
+			}
 		case '^':
 			tok.type = Circumflex;
 			tok.literal = "^";
@@ -200,7 +206,7 @@ Token next_token(Lexer* l){
 	}
 }
 
-TokenList* lex(char *input) {
+TokenList* lex(char* input) {
 	Lexer* lexer_ptr = init(input);
 	Token tok = next_token(lexer_ptr);
 	TokenList* accum = malloc(sizeof(TokenList));

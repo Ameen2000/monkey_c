@@ -82,7 +82,7 @@ TokenType lookup_ident(char* ident) {
 void print_token_list(TokenList* t) {
 	while (t != NULL) {
 		char* str = t->data.literal;
-		printf("%s\n", str);
+		printf("%s : %s\n", token_type(t->data.type),str);
 		t = t->next;
 	}
 	printf("\n");
