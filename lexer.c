@@ -112,67 +112,102 @@ Token next_token(Lexer* l){
 		case '=':
 			tok.type = Assign;
 			tok.literal = "=";
+			lexer_read_char(l);
+			return tok;
 		case '+':
 			tok.type = Plus;
 			tok.literal = "+";
+			lexer_read_char(l);
+			return tok;
 		case '-':
 			tok.type = Minus;
 			tok.literal = "-";
+			lexer_read_char(l);
+			return tok;
 		case '*':
 			tok.type = Asterisk;
 			tok.literal = "*";
+			lexer_read_char(l);
+			return tok;
 		case '/':
 			tok.type = Slash;
 			tok.literal = "/";
+			lexer_read_char(l);
+			return tok;
 		case '!':
 			tok.type = Bang;
 			tok.literal = "!";
+			lexer_read_char(l);
+			return tok;
 		case '^':
 			tok.type = Circumflex;
 			tok.literal = "^";
+			lexer_read_char(l);
+			return tok;
 		case ',':
 			tok.type = Comma;
 			tok.literal = ",";
+			lexer_read_char(l);
+			return tok;
 		case ';':
 			tok.type = SemiColon;
 			tok.literal = ";";
+			lexer_read_char(l);
+			return tok;
 		case '{':
 			tok.type = LBrace;
 			tok.literal = "{";
+			lexer_read_char(l);
+			return tok;
 		case '}':
 			tok.type = RBrace;
 			tok.literal = "}";
+			lexer_read_char(l);
+			return tok;
 		case '(':
 			tok.type = LParen;
 			tok.literal = "(";
+			lexer_read_char(l);
+			return tok;
 		case ')':
 			tok.type = RParen;
 			tok.literal = ")";
+			lexer_read_char(l);
+			return tok;
 		case '\0':
 			tok.type = TokenEOF;
 			tok.literal = "";
+			lexer_read_char(l);
+			return tok;
 		default:
 			if (isdigit(l->ch)) {
 				tok.type = Int;
 				tok.literal = read_number(l);
+				lexer_read_char(l);
+				return tok;
 			} else if (is_letter(l->ch)) {
 				tok.literal = read_identifier(l);
 				tok.type = lookup_ident(tok.literal);
+				lexer_read_char(l);
+				return tok;
 			} else {
 				tok.type = Illegal;
 				tok.literal = "";
+				lexer_read_char(l);
+				return tok;
 		}
 
 	}
-	lexer_read_char(l);
-	return tok;
 }
 
 TokenList* lex(char *input) {
 	Lexer* lexer_ptr = init(input);
 	Token tok = next_token(lexer_ptr);
-	TokenList* accum;
-	accum->data = tok;
-	accum->next = NULL;
-	// WORK IN PROGRESS
+	TokenList* accum = malloc(sizeof(TokenList));
+	accum = NULL;
+	while (strcmp(tok.literal, "") != 0) {
+		accum = push_token(accum, tok);
+		tok = next_token(lexer_ptr);
+	}
+	return list_reverse(accum);
 }

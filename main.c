@@ -4,6 +4,6 @@
 #include "lexer.h"
 
 int main() {
-	TokenList* l = lex("5 + 4 = 9");
+	TokenList* l = lex("let x = 5 + 4");
 	print_token_list(l);
 }

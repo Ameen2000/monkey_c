@@ -35,14 +35,14 @@ typedef struct {
 	char* literal;
 } Token;
 
-typedef struct Node {
+typedef struct TokenList {
 	Token data;
-	struct Node* next;
+	struct TokenList* next;
 } TokenList;
 
 TokenList* push_token(TokenList* head, Token data);
 
-TokenList* add_token(TokenList* head, Token data);
+TokenList* list_reverse(TokenList* list);
 
 char* token_type(TokenType t);
 

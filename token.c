@@ -5,16 +5,38 @@
 #include "token.h"
 
 TokenList* push_token(TokenList* list, Token data) {
-	TokenList* new_head;
-	new_head->data = data;
-	new_head->next = list;
-	return  new_head;
+	TokenList* new = NULL;
+	if (list == NULL) {
+		new = malloc(sizeof(TokenList));
+		if (new == NULL) {
+			return NULL;
+		}
+		new->data = data;
+		list = new;
+		new->next = NULL;
+	} else {
+		new = malloc(sizeof(TokenList));
+		if (new == NULL) {
+			return NULL;
+		}
+		new->data = data;
+		new->next = list;
+		list = new;
+	}
+	return new;
 }
 
-TokenList* add_token(TokenList* list, Token data) {
-	TokenList* new_tail;
-	new_tail->data = data;
-	list->next = new_tail;
+TokenList* list_reverse(TokenList* list) {
+	TokenList* prev = NULL;
+	TokenList* curr = list;
+	TokenList* next = NULL;
+	while (curr != NULL) {
+		next = curr->next;
+		curr->next = prev;
+		prev = curr;
+		curr = next;
+	}
+	list = prev;
 	return list;
 }
 
@@ -47,9 +69,9 @@ char* token_type(TokenType t) {
 
 TokenType lookup_ident(char* ident) {
 	TokenType tok;
-	if (strcmp(ident, "fn")) {
+	if (strcmp(ident, "fn") == 0) {
 		tok = Function;
-	} else if (strcmp(ident, "let")) {
+	} else if (strcmp(ident, "let") == 0) {
 		tok = Let;
 	} else {
 		tok = Ident;
@@ -59,7 +81,7 @@ TokenType lookup_ident(char* ident) {
 
 void print_token_list(TokenList* t) {
 	while (t != NULL) {
-		char* str = token_type(t->data.type);
+		char* str = t->data.literal;
 		printf("%s\n", str);
 		t = t->next;
 	}
