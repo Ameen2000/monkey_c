@@ -63,6 +63,10 @@ char* token_type(TokenType t) {
 		case EQ: return "EQ";
 		case NOT_EQ: return "NOT_EQ";
 		case Bang: return "Bang";
+		case LT: return "LT";
+		case GT: return "GT";
+		case LTE: return "LTE";
+		case GTE: return "GTE";
 	}
 	return "";
 }

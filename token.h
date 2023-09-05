@@ -16,6 +16,10 @@ typedef enum {
 	EQ,
 	Bang,
 	NOT_EQ,
+	LT,
+	GT,
+	LTE,
+	GTE,
 	// Delimeters
 	Comma,
 	SemiColon,

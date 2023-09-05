@@ -110,7 +110,7 @@ Token next_token(Lexer* l){
 				lexer_read_char(l);
 				return tok;
 
-			}
+		}
 		case '+':
 			tok.type = Plus;
 			tok.literal = "+";
@@ -131,6 +131,32 @@ Token next_token(Lexer* l){
 			tok.literal = "/";
 			lexer_read_char(l);
 			return tok;
+		case '>':
+			if (peek_char(l) == '=') {
+				tok.type = GTE;
+				tok.literal = ">=";
+				lexer_read_char(l);
+				lexer_read_char(l);
+				return tok;
+			} else {
+				tok.type = GT;
+				tok.literal = ">";
+				lexer_read_char(l);
+				return tok;
+		}
+		case '<':
+			if (peek_char(l) == '=') {
+				tok.type = LTE;
+				tok.literal = "<=";
+				lexer_read_char(l);
+				lexer_read_char(l);
+				return tok;
+			} else {
+				tok.type = LT;
+				tok.literal = "<";
+				lexer_read_char(l);
+				return tok;
+		}
 		case '!':
 			if (peek_char(l) == '=') {
 				tok.type = NOT_EQ;
@@ -144,7 +170,7 @@ Token next_token(Lexer* l){
 				tok.literal = "!";
 				lexer_read_char(l);
 				return tok;
-			}
+		}
 		case '^':
 			tok.type = Circumflex;
 			tok.literal = "^";
